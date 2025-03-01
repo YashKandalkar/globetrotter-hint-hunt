@@ -1,7 +1,16 @@
-
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase, getCurrentUser, createOrUpdateUserProfile } from '../lib/supabase';
-import { UserGameStats } from '../types/supabase';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import {
+  supabase,
+  getCurrentUser,
+  createOrUpdateUserProfile,
+} from "../lib/supabase";
+import { UserGameStats } from "../types/supabase";
 
 interface AuthContextType {
   user: any; // Supabase user object
@@ -23,10 +32,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(
-    localStorage.getItem('globetrotter_session_id')
+    localStorage.getItem("globetrotter_session_id"),
   );
   const [username, setUsernameState] = useState<string | null>(
-    localStorage.getItem('globetrotter_username')
+    localStorage.getItem("globetrotter_username"),
   );
 
   // Listen for auth changes
@@ -35,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async (event, session) => {
         setUser(session?.user ?? null);
         setLoading(false);
-      }
+      },
     );
 
     // Check for current user on mount
@@ -43,29 +52,70 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const currentUser = await getCurrentUser();
         setUser(currentUser || null);
-        
-        // If we have a user and a username, fetch their stats
-        if (currentUser && username) {
+
+        // If we have a user, try to fetch their profile
+        if (currentUser) {
           try {
-            const { data, error } = await supabase
-              .from('user_profiles')
-              .select('score, games_played, username')
-              .eq('id', currentUser.id)
+            const { data: userProfile, error: profileError } = await supabase
+              .from("user_profiles")
+              .select("score, games_played, username")
+              .eq("id", currentUser.id)
               .single();
-            
-            if (!error && data) {
-              setUserStats({
-                correct_answers: data.score,
-                total_games: data.games_played,
-                username: data.username
+
+            // Subscribe to realtime changes
+            const subscription = supabase
+              .channel("user_profile_changes")
+              .on(
+                "postgres_changes",
+                {
+                  event: "UPDATE",
+                  schema: "public",
+                  table: "user_profiles",
+                  filter: `id=eq.${currentUser.id}`,
+                },
+                (payload) => {
+                  const updatedData = payload.new;
+                  setUserStats({
+                    correct_answers: updatedData.score,
+                    total_games: updatedData.games_played,
+                    username: updatedData.username,
+                  });
+                },
+              )
+              .subscribe((status, error) => {
+                console.log("status", status);
+                console.log("error", error);
               });
+
+            if (!profileError && userProfile) {
+              // User profile exists, set their username and stats
+              setUserStats({
+                correct_answers: userProfile.score,
+                total_games: userProfile.games_played,
+                username: userProfile.username,
+              });
+              setUsernameState(userProfile.username);
+              localStorage.setItem(
+                "globetrotter_username",
+                userProfile.username,
+              );
+            } else if (profileError && profileError.code === "PGRST116") {
+              // Profile doesn't exist - we'll ask for username
+              console.log(
+                "No user profile found. Username setup will be required.",
+              );
+              // Clear any existing username in localStorage to ensure proper flow
+              localStorage.removeItem("globetrotter_username");
+              setUsernameState(null);
             }
+
+            return subscription;
           } catch (err) {
-            console.error('Error fetching user stats:', err);
+            console.error("Error fetching user profile:", err);
           }
         }
       } catch (err) {
-        setError('Error checking authentication status');
+        setError("Error checking authentication status");
         console.error(err);
       } finally {
         setLoading(false);
@@ -77,14 +127,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [username]);
+  }, []);
 
   // Save session ID to localStorage when it changes
   useEffect(() => {
     if (sessionId) {
-      localStorage.setItem('globetrotter_session_id', sessionId);
+      localStorage.setItem("globetrotter_session_id", sessionId);
     } else {
-      localStorage.removeItem('globetrotter_session_id');
+      localStorage.removeItem("globetrotter_session_id");
     }
   }, [sessionId]);
 
@@ -94,13 +144,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Update the user profile in Supabase
         await createOrUpdateUserProfile(user.id, newUsername);
       }
-      
+
       // Always store username locally for a more seamless experience
-      localStorage.setItem('globetrotter_username', newUsername);
+      localStorage.setItem("globetrotter_username", newUsername);
       setUsernameState(newUsername);
     } catch (err) {
-      console.error('Error setting username:', err);
-      setError('Failed to set username');
+      console.error("Error setting username:", err);
+      setError("Failed to set username");
     }
   };
 
@@ -109,13 +159,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await supabase.auth.signOut();
       setUser(null);
       setUserStats(null);
-      localStorage.removeItem('globetrotter_username');
-      localStorage.removeItem('globetrotter_session_id');
+      localStorage.removeItem("globetrotter_username");
+      localStorage.removeItem("globetrotter_session_id");
       setUsernameState(null);
       setSessionId(null);
     } catch (err) {
-      console.error('Error signing out:', err);
-      setError('Failed to sign out');
+      console.error("Error signing out:", err);
+      setError("Failed to sign out");
     }
   };
 
@@ -128,7 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSessionId,
     setUsername,
     username,
-    signOut: handleSignOut
+    signOut: handleSignOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -137,7 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

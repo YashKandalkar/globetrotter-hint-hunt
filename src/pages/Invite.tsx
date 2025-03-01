@@ -1,8 +1,13 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import GameCard from "@/components/GameCard";
 import UsernameForm from "@/components/UsernameForm";
@@ -27,6 +32,7 @@ const Invite = ({ sessionId }: InviteProps) => {
       try {
         setLoading(true);
         const stats = await getSessionCreatorStats(sessionId);
+        console.log({ stats });
         setCreatorStats(stats);
       } catch (error) {
         console.error("Error fetching creator stats:", error);
@@ -87,37 +93,42 @@ const Invite = ({ sessionId }: InviteProps) => {
       >
         <Card className="glass-card border-gradient overflow-hidden">
           <CardHeader className="text-center pb-2">
-            <CardTitle className="text-2xl font-medium">You've Been Challenged!</CardTitle>
+            <CardTitle className="text-2xl font-medium">
+              You've Been Challenged!
+            </CardTitle>
           </CardHeader>
-          
+
           <CardContent className="p-6">
             <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg p-6 mb-6">
               <div className="flex justify-center mb-4">
                 <UserCheck className="h-12 w-12 text-primary" />
               </div>
-              
+
               <h3 className="text-xl font-semibold text-center mb-2">
-                {creatorStats?.username} has challenged you to beat their score!
+                {creatorStats?.username} has challenged you to beat their
+                score!
               </h3>
-              
+
               <div className="mt-6 bg-background/50 rounded-lg p-4 backdrop-blur-sm">
                 <div className="text-center">
                   <p className="text-muted-foreground">Their Current Score</p>
                   <div className="flex justify-center items-center mt-2">
                     <Award className="h-5 w-5 text-accent mr-2" />
                     <span className="text-2xl font-bold">
-                      {creatorStats?.correct_answers || 0}/{creatorStats?.total_games || 0}
+                      {creatorStats?.correct_answers || 0}/
+                      {creatorStats?.total_games || 0}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <p className="text-center text-muted-foreground mb-4">
-              Test your knowledge of world destinations and see if you can beat them!
+              Test your knowledge of world destinations and see if you can beat
+              them!
             </p>
           </CardContent>
-          
+
           <CardFooter className="bg-secondary/50 px-6 py-4 border-t">
             <Button
               onClick={handleAcceptChallenge}
