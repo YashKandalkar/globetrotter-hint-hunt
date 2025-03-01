@@ -1,13 +1,26 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import Game from "./Game";
+import Invite from "./Invite";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { GameProvider } from "@/contexts/GameContext";
 
 const Index = () => {
+  const [searchParams] = useSearchParams();
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const session = searchParams.get("session");
+    setSessionId(session);
+  }, [searchParams]);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <AuthProvider>
+      <GameProvider>
+        {sessionId ? <Invite sessionId={sessionId} /> : <Game />}
+      </GameProvider>
+    </AuthProvider>
   );
 };
 

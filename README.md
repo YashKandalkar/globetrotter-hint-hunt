@@ -1,69 +1,54 @@
-# Welcome to your Lovable project
 
-## Project info
+# Globetrotter Challenge
 
-**URL**: https://lovable.dev/projects/8878c141-787f-4d8e-9245-136dcce53586
+A full-stack web application where users get cryptic clues about a famous place and must guess which destination it refers to.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- Random travel destination clues
+- Multiple choice answers
+- Immediate feedback with fun facts
+- Score tracking
+- Challenge friends feature
+- User profiles
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/8878c141-787f-4d8e-9245-136dcce53586) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
+## Tech Stack
 
 - Vite
-- TypeScript
 - React
-- shadcn-ui
+- TypeScript
 - Tailwind CSS
+- Framer Motion for animations
+- Supabase for backend and authentication
 
-## How can I deploy this project?
+## Setup
 
-Simply open [Lovable](https://lovable.dev/projects/8878c141-787f-4d8e-9245-136dcce53586) and click on Share -> Publish.
+1. Clone the repository
+2. Install dependencies with `npm install`
+3. Copy `.env.local.example` to `.env.local` and add your Supabase credentials
+4. Run the development server with `npm run dev`
 
-## I want to use a custom domain - is that possible?
+### Supabase Setup
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+1. Create a new Supabase project
+2. Run the SQL commands in `supabase/setup.sql` in the Supabase SQL editor
+3. Enable Email OTP authentication in Supabase Auth settings
+4. Update your `.env.local` file with the Supabase URL and anon key
+
+## Game Rules
+
+1. You'll be presented with 1-2 clues about a famous destination
+2. Select the correct destination from the multiple choice options
+3. Get immediate feedback on your answer with a fun fact
+4. Track your score and challenge friends to beat it!
+
+## Challenge a Friend
+
+1. Sign up with a username
+2. Play a few rounds to establish your score
+3. Click "Challenge a Friend" to generate a shareable link
+4. Share the link with friends to see if they can beat your score!
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
