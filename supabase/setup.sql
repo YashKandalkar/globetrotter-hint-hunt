@@ -130,11 +130,11 @@ ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE game_sessions ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for user_profiles
--- Users can only view their own profile
-CREATE POLICY "Users can view their own profile"
+-- Users can only view any profile
+CREATE POLICY "Users can view any profile"
   ON user_profiles
   FOR SELECT
-  USING (auth.uid() = id);
+  USING (true);
 
 -- Users can only update their own profile
 CREATE POLICY "Users can update their own profile"
