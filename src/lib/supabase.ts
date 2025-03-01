@@ -15,6 +15,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Authentication functions
 export const signInWithEmail = async (email: string) => {
+  console.log("signInWithEmail", email, window.location.origin);
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
