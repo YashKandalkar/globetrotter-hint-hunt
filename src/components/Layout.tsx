@@ -16,7 +16,7 @@ const Layout = ({ children }: LayoutProps) => {
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/50">
       <div className="container mx-auto py-8 px-4">
         <motion.header
-          className="flex flex-col sm:flex-row justify-between items-center mb-12"
+          className="flex flex-col gap-4 sm:flex-row justify-between items-center mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
