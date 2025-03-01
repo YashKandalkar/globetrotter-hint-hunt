@@ -52,7 +52,7 @@ export function UsernameSetup({ onComplete }: { onComplete?: () => void }) {
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
-      await setUsername(values.username);
+      await setUsername(values.username, true);
       toast.success("Username set successfully!");
       if (onComplete) {
         onComplete();

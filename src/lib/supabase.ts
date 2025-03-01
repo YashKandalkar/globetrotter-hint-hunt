@@ -95,16 +95,22 @@ export const checkAnswer = async (
 export const createOrUpdateUserProfile = async (
   userId: string,
   username: string,
+  onlyUpdateUsername: boolean = false,
 ): Promise<UserProfile | null> => {
   try {
+    const newUserProfile = {
+      id: userId,
+      username,
+    };
+
+    if (!onlyUpdateUsername) {
+      newUserProfile["score"] = 0;
+      newUserProfile["games_played"] = 0;
+    }
+
     const { data, error } = await supabase
       .from("user_profiles")
-      .upsert({
-        id: userId,
-        username,
-        score: 0,
-        games_played: 0,
-      })
+      .upsert(newUserProfile)
       .select()
       .single();
 

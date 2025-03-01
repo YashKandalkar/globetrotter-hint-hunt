@@ -19,7 +19,10 @@ interface AuthContextType {
   error: string | null;
   sessionId: string | null;
   setSessionId: (id: string | null) => void;
-  setUsername: (username: string) => Promise<void>;
+  setUsername: (
+    username: string,
+    onlyUpdateUsername: boolean,
+  ) => Promise<void>;
   username: string | null;
   signOut: () => Promise<void>;
 }
@@ -138,11 +141,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [sessionId]);
 
-  const setUsername = async (newUsername: string) => {
+  const setUsername = async (
+    newUsername: string,
+    onlyUpdateUsername: boolean = false,
+  ) => {
     try {
       if (user) {
         // Update the user profile in Supabase
-        await createOrUpdateUserProfile(user.id, newUsername);
+        await createOrUpdateUserProfile(
+          user.id,
+          newUsername,
+          onlyUpdateUsername,
+        );
       }
 
       // Always store username locally for a more seamless experience

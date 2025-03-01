@@ -98,7 +98,7 @@ describe("AuthContext", () => {
     });
 
     await act(async () => {
-      await result.current.setUsername("newUsername");
+      await result.current.setUsername("newUsername", true);
     });
 
     expect(result.current.username).toBe("newUsername");
